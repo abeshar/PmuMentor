@@ -1,43 +1,125 @@
 using System;
 
-class Program
+class UserAccountSystem
 {
     static void Main()
     {
-        // Create an instance of the Account class
-        Account userAccount = new Account();
+        // Display the menu
+        Console.WriteLine("Welcome to the User Account System");
+        Console.WriteLine("-----------------------------------");
+        Console.WriteLine("1. Create Account");
+        Console.WriteLine("2. Login");
+        Console.WriteLine("3. Update Account");
+        Console.WriteLine("4. Exit");
+        Console.Write("Please choose an option (1-4): ");
+
+        // Get user's choice
+        int choice = Convert.ToInt32(Console.ReadLine());
+
+        // Variables to store account credentials
+        string storedUsername = "";
+        string storedPassword = "";
 
         while (true)
         {
-            // Display the menu
-            Console.WriteLine("Welcome to the User Account System");
-            Console.WriteLine("-----------------------------------");
+            switch (choice)
+            {
+                case 1: // Account Creation
+                    // Get user input for account creation
+                    Console.Write("Enter your username: ");
+                    storedUsername = Console.ReadLine();
+
+                    Console.Write("Enter your password: ");
+                    storedPassword = Console.ReadLine();
+
+                    // Validation checks
+                    if (string.IsNullOrEmpty(storedUsername) || string.IsNullOrEmpty(storedPassword))
+                    {
+                        Console.WriteLine("Error: Both fields are required!");
+                    }
+                    else if (storedPassword.Length < 6)
+                    {
+                        Console.WriteLine("Error: Password must be at least 6 characters long.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Account successfully created!");
+                    }
+                    break;
+
+                case 2: // Login
+                    if (string.IsNullOrEmpty(storedUsername) || string.IsNullOrEmpty(storedPassword))
+                    {
+                        Console.WriteLine("Error: You need to create an account first!");
+                    }
+                    else
+                    {
+                        // Get user input for login
+                        Console.Write("Enter your username: ");
+                        string loginUsername = Console.ReadLine();
+
+                        Console.Write("Enter your password: ");
+                        string loginPassword = Console.ReadLine();
+
+                        // Check if the entered credentials match the stored ones
+                        if (loginUsername == storedUsername && loginPassword == storedPassword)
+                        {
+                            Console.WriteLine("Login successful! Welcome, " + loginUsername + ".");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Login failed! Invalid username or password.");
+                        }
+                    }
+                    break;
+
+                case 3: // Update Account
+                    if (string.IsNullOrEmpty(storedUsername) || string.IsNullOrEmpty(storedPassword))
+                    {
+                        Console.WriteLine("Error: You need to create an account first!");
+                    }
+                    else
+                    {
+                        // Get user input for account update
+                        Console.WriteLine("Update your account:");
+
+                        // Update username
+                        Console.Write("Enter new username (leave blank to keep current): ");
+                        string newUsername = Console.ReadLine();
+                        if (!string.IsNullOrEmpty(newUsername))
+                        {
+                            storedUsername = newUsername;
+                            Console.WriteLine("Username updated successfully!");
+                        }
+
+                        // Update password
+                        Console.Write("Enter new password (leave blank to keep current): ");
+                        string newPassword = Console.ReadLine();
+                        if (!string.IsNullOrEmpty(newPassword))
+                        {
+                            storedPassword = newPassword;
+                            Console.WriteLine("Password updated successfully!");
+                        }
+                    }
+                    break;
+
+                case 4: // Exit
+                    Console.WriteLine("Exiting the system...");
+                    return;
+
+                default:
+                    Console.WriteLine("Invalid choice. Please choose between 1 and 4.");
+                    break;
+            }
+
+            // Display the menu again after an operation
+            Console.WriteLine("\n-----------------------------------");
             Console.WriteLine("1. Create Account");
             Console.WriteLine("2. Login");
             Console.WriteLine("3. Update Account");
             Console.WriteLine("4. Exit");
             Console.Write("Please choose an option (1-4): ");
-
-            int choice = Convert.ToInt32(Console.ReadLine());
-
-            switch (choice)
-            {
-                case 1:
-                    userAccount.CreateAccount();
-                    break;
-                case 2:
-                    userAccount.Login();
-                    break;
-                case 3:
-                    userAccount.UpdateAccount();
-                    break;
-                case 4:
-                    Console.WriteLine("Exiting the system...");
-                    return;
-                default:
-                    Console.WriteLine("Invalid choice. Please choose between 1 and 4.");
-                    break;
-            }
+            choice = Convert.ToInt32(Console.ReadLine());
         }
     }
 }
