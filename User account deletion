@@ -1,0 +1,57 @@
+import java.io.*;
+import java.util.Scanner;
+
+public class UserAccountDeletion {
+
+    // Function to delete the user account
+    public static void deleteAccount() {
+        Scanner scanner = new Scanner(System.in);
+        String usersDb = "users.txt";
+
+        // Get the username
+        System.out.print("Enter your username: ");
+        String username = scanner.nextLine().trim();
+
+        // Get the password
+        System.out.print("Enter your password: ");
+        String password = scanner.nextLine().trim();
+
+        // Read the file and prepare to delete the user
+        File tempFile = new File("users_temp.txt");
+        boolean userFound = false;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(usersDb));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
+            
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] user = line.split(",");
+                // If the username and password match, skip writing this line to the temp file (deleting it)
+                if (user[0].equals(username) && user[1].equals(password)) {
+                    userFound = true;
+                    System.out.println("Account deleted successfully.");
+                    continue;  // Skip this line (effectively deleting the account)
+                }
+                // Write all other users to the temp file
+                writer.write(line + "\n");
+            }
+
+            // Check if the user was found
+            if (!userFound) {
+                System.out.println("Invalid username or password. Account not found.");
+            }
+
+            // Rename temp file to the original file
+            if (!tempFile.renameTo(new File(usersDb))) {
+                System.out.println("Error while deleting the account.");
+            }
+
+        } catch (IOException e) {
+            System.out.println("Error reading or writing the users database.");
+        }
+    }
+
+    public static void main(String[] args) {
+        deleteAccount();
+    }
+}
