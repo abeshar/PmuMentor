@@ -1,7 +1,12 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 class UserAccountSystem
 {
+    static Dictionary<string, (string password, string email, string phoneNumber)> accounts = new Dictionary<string, (string password, string email, string phoneNumber)>();
+
     static void Main()
     {
         // Display the menu
@@ -16,118 +21,20 @@ class UserAccountSystem
         // Get user's choice
         int choice = Convert.ToInt32(Console.ReadLine());
 
-        // Variables to store account credentials and user information
-        string storedUsername = "";
-        string storedPassword = "";
-        string storedEmail = "";
-        string storedPhoneNumber = "";
-
         while (true)
         {
             switch (choice)
             {
                 case 1: // Account Creation
-                    // Get user input for account creation
-                    Console.Write("Enter your username: ");
-                    storedUsername = Console.ReadLine();
-
-                    Console.Write("Enter your password: ");
-                    storedPassword = Console.ReadLine();
-
-                    Console.Write("Enter your email: ");
-                    storedEmail = Console.ReadLine();
-
-                    Console.Write("Enter your phone number: ");
-                    storedPhoneNumber = Console.ReadLine();
-
-                    // Validation checks
-                    if (string.IsNullOrEmpty(storedUsername) || string.IsNullOrEmpty(storedPassword) || 
-                        string.IsNullOrEmpty(storedEmail) || string.IsNullOrEmpty(storedPhoneNumber))
-                    {
-                        Console.WriteLine("Error: All fields are required!");
-                    }
-                    else if (storedPassword.Length < 6)
-                    {
-                        Console.WriteLine("Error: Password must be at least 6 characters long.");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Account successfully created!");
-                    }
+                    CreateAccount();
                     break;
 
                 case 2: // Login
-                    if (string.IsNullOrEmpty(storedUsername) || string.IsNullOrEmpty(storedPassword))
-                    {
-                        Console.WriteLine("Error: You need to create an account first!");
-                    }
-                    else
-                    {
-                        // Get user input for login
-                        Console.Write("Enter your username: ");
-                        string loginUsername = Console.ReadLine();
-
-                        Console.Write("Enter your password: ");
-                        string loginPassword = Console.ReadLine();
-
-                        // Check if the entered credentials match the stored ones
-                        if (loginUsername == storedUsername && loginPassword == storedPassword)
-                        {
-                            Console.WriteLine("Login successful! Welcome, " + loginUsername + ".");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Login failed! Invalid username or password.");
-                        }
-                    }
+                    Login();
                     break;
 
                 case 3: // Update Account
-                    if (string.IsNullOrEmpty(storedUsername) || string.IsNullOrEmpty(storedPassword))
-                    {
-                        Console.WriteLine("Error: You need to create an account first!");
-                    }
-                    else
-                    {
-                        // Get user input for account update
-                        Console.WriteLine("Update your account:");
-
-                        // Update username
-                        Console.Write("Enter new username (leave blank to keep current): ");
-                        string newUsername = Console.ReadLine();
-                        if (!string.IsNullOrEmpty(newUsername))
-                        {
-                            storedUsername = newUsername;
-                            Console.WriteLine("Username updated successfully!");
-                        }
-
-                        // Update password
-                        Console.Write("Enter new password (leave blank to keep current): ");
-                        string newPassword = Console.ReadLine();
-                        if (!string.IsNullOrEmpty(newPassword))
-                        {
-                            storedPassword = newPassword;
-                            Console.WriteLine("Password updated successfully!");
-                        }
-
-                        // Update email
-                        Console.Write("Enter new email (leave blank to keep current): ");
-                        string newEmail = Console.ReadLine();
-                        if (!string.IsNullOrEmpty(newEmail))
-                        {
-                            storedEmail = newEmail;
-                            Console.WriteLine("Email updated successfully!");
-                        }
-
-                        // Update phone number
-                        Console.Write("Enter new phone number (leave blank to keep current): ");
-                        string newPhoneNumber = Console.ReadLine();
-                        if (!string.IsNullOrEmpty(newPhoneNumber))
-                        {
-                            storedPhoneNumber = newPhoneNumber;
-                            Console.WriteLine("Phone number updated successfully!");
-                        }
-                    }
+                    UpdateAccount();
                     break;
 
                 case 4: // Exit
@@ -148,5 +55,186 @@ class UserAccountSystem
             Console.Write("Please choose an option (1-4): ");
             choice = Convert.ToInt32(Console.ReadLine());
         }
+    }
+
+    static void CreateAccount()
+    {
+        string username, password, email, phoneNumber;
+
+        // Get user input for account creation
+        Console.Write("Enter your username: ");
+        username = Console.ReadLine();
+
+        // Check if account already exists
+        if (accounts.ContainsKey(username))
+        {
+            Console.WriteLine("Error: An account with this username already exists.");
+            return;
+        }
+
+        // Prompt for password with validation
+        password = GetValidPassword();
+
+        // Email Validation: Check if the email format is correct
+        while (true)
+        {
+            Console.Write("Enter your email: ");
+            email = Console.ReadLine();
+            if (!IsValidEmail(email))
+            {
+                Console.WriteLine("Error: Invalid email format. Please enter a valid email.");
+            }
+            else
+            {
+                break; // Exit the loop if the email is valid
+            }
+        }
+
+        // Phone Number Validation: Must be exactly 10 digits
+        while (true)
+        {
+            Console.Write("Enter your phone number (10 digits): ");
+            phoneNumber = Console.ReadLine();
+            if (!IsValidPhoneNumber(phoneNumber))
+            {
+                Console.WriteLine("Error: Phone number must be exactly 10 digits. Please enter a valid phone number.");
+            }
+            else
+            {
+                break; // Exit the loop if the phone number is valid
+            }
+        }
+
+        // Store account details
+        accounts[username] = (password, email, phoneNumber);
+        Console.WriteLine("Account successfully created!");
+    }
+
+    static string GetValidPassword()
+    {
+        string password;
+        while (true)
+        {
+            Console.Write("Enter your password (min 6 characters): ");
+            password = Console.ReadLine();
+
+            // Validate password length
+            if (password.Length < 6)
+            {
+                Console.WriteLine("Error: Password must be at least 6 characters long. Please try again.");
+            }
+            else
+            {
+                return password; // Exit the loop if the password is valid
+            }
+        }
+    }
+
+    static void Login()
+    {
+        Console.Write("Enter your username: ");
+        string loginUsername = Console.ReadLine();
+
+        if (!accounts.ContainsKey(loginUsername))
+        {
+            Console.WriteLine("Error: Username not found. Please create an account first.");
+            return;
+        }
+
+        // Validate password for login with retries
+        string loginPassword = GetValidLoginPassword();
+
+        // Check if the entered credentials match the stored ones
+        if (accounts[loginUsername].password == loginPassword)
+        {
+            Console.WriteLine("Login successful! Welcome, " + loginUsername + ".");
+        }
+        else
+        {
+            Console.WriteLine("Login failed! Invalid password.");
+        }
+    }
+
+    static string GetValidLoginPassword()
+    {
+        string password;
+        while (true)
+        {
+            Console.Write("Enter your password: ");
+            password = Console.ReadLine();
+
+            // If password is correct, return it
+            return password;
+        }
+    }
+
+    static void UpdateAccount()
+    {
+        Console.Write("Enter your username: ");
+        string username = Console.ReadLine();
+
+        if (!accounts.ContainsKey(username))
+        {
+            Console.WriteLine("Error: Username not found. Please create an account first.");
+            return;
+        }
+
+        // Get user input for account update
+        Console.WriteLine("Update your account:");
+
+        // Update password
+        Console.Write("Enter new password (leave blank to keep current): ");
+        string newPassword = Console.ReadLine();
+        if (!string.IsNullOrEmpty(newPassword))
+        {
+            if (newPassword.Length < 6)
+            {
+                Console.WriteLine("Error: Password must be at least 6 characters long.");
+                return;
+            }
+            accounts[username] = (newPassword, accounts[username].email, accounts[username].phoneNumber);
+            Console.WriteLine("Password updated successfully!");
+        }
+
+        // Update email
+        Console.Write("Enter new email (leave blank to keep current): ");
+        string newEmail = Console.ReadLine();
+        if (!string.IsNullOrEmpty(newEmail))
+        {
+            if (!IsValidEmail(newEmail))
+            {
+                Console.WriteLine("Error: Invalid email format.");
+                return;
+            }
+            accounts[username] = (accounts[username].password, newEmail, accounts[username].phoneNumber);
+            Console.WriteLine("Email updated successfully!");
+        }
+
+        // Update phone number
+        Console.Write("Enter new phone number (leave blank to keep current): ");
+        string newPhoneNumber = Console.ReadLine();
+        if (!string.IsNullOrEmpty(newPhoneNumber))
+        {
+            if (!IsValidPhoneNumber(newPhoneNumber))
+            {
+                Console.WriteLine("Error: Phone number must be exactly 10 digits.");
+                return;
+            }
+            accounts[username] = (accounts[username].password, accounts[username].email, newPhoneNumber);
+            Console.WriteLine("Phone number updated successfully!");
+        }
+    }
+
+    // Method to validate email using regular expression
+    static bool IsValidEmail(string email)
+    {
+        string emailPattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+        return Regex.IsMatch(email, emailPattern);
+    }
+
+    // Method to validate phone number (must be exactly 10 digits)
+    static bool IsValidPhoneNumber(string phoneNumber)
+    {
+        return phoneNumber.Length == 10 && phoneNumber.All(char.IsDigit);
     }
 }
