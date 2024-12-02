@@ -1,0 +1,43 @@
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        // Create an instance of the Account class
+        Account userAccount = new Account();
+
+        while (true)
+        {
+            // Display the menu
+            Console.WriteLine("Welcome to the User Account System");
+            Console.WriteLine("-----------------------------------");
+            Console.WriteLine("1. Create Account");
+            Console.WriteLine("2. Login");
+            Console.WriteLine("3. Update Account");
+            Console.WriteLine("4. Exit");
+            Console.Write("Please choose an option (1-4): ");
+
+            int choice = Convert.ToInt32(Console.ReadLine());
+
+            switch (choice)
+            {
+                case 1:
+                    userAccount.CreateAccount();
+                    break;
+                case 2:
+                    userAccount.Login();
+                    break;
+                case 3:
+                    userAccount.UpdateAccount();
+                    break;
+                case 4:
+                    Console.WriteLine("Exiting the system...");
+                    return;
+                default:
+                    Console.WriteLine("Invalid choice. Please choose between 1 and 4.");
+                    break;
+            }
+        }
+    }
+}
