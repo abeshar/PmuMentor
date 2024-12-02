@@ -16,9 +16,11 @@ class UserAccountSystem
         // Get user's choice
         int choice = Convert.ToInt32(Console.ReadLine());
 
-        // Variables to store account credentials
+        // Variables to store account credentials and user information
         string storedUsername = "";
         string storedPassword = "";
+        string storedEmail = "";
+        string storedPhoneNumber = "";
 
         while (true)
         {
@@ -32,10 +34,17 @@ class UserAccountSystem
                     Console.Write("Enter your password: ");
                     storedPassword = Console.ReadLine();
 
+                    Console.Write("Enter your email: ");
+                    storedEmail = Console.ReadLine();
+
+                    Console.Write("Enter your phone number: ");
+                    storedPhoneNumber = Console.ReadLine();
+
                     // Validation checks
-                    if (string.IsNullOrEmpty(storedUsername) || string.IsNullOrEmpty(storedPassword))
+                    if (string.IsNullOrEmpty(storedUsername) || string.IsNullOrEmpty(storedPassword) || 
+                        string.IsNullOrEmpty(storedEmail) || string.IsNullOrEmpty(storedPhoneNumber))
                     {
-                        Console.WriteLine("Error: Both fields are required!");
+                        Console.WriteLine("Error: All fields are required!");
                     }
                     else if (storedPassword.Length < 6)
                     {
@@ -99,6 +108,24 @@ class UserAccountSystem
                         {
                             storedPassword = newPassword;
                             Console.WriteLine("Password updated successfully!");
+                        }
+
+                        // Update email
+                        Console.Write("Enter new email (leave blank to keep current): ");
+                        string newEmail = Console.ReadLine();
+                        if (!string.IsNullOrEmpty(newEmail))
+                        {
+                            storedEmail = newEmail;
+                            Console.WriteLine("Email updated successfully!");
+                        }
+
+                        // Update phone number
+                        Console.Write("Enter new phone number (leave blank to keep current): ");
+                        string newPhoneNumber = Console.ReadLine();
+                        if (!string.IsNullOrEmpty(newPhoneNumber))
+                        {
+                            storedPhoneNumber = newPhoneNumber;
+                            Console.WriteLine("Phone number updated successfully!");
                         }
                     }
                     break;
