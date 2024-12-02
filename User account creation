@@ -7,7 +7,6 @@ public class AccountCreation {
 
         // Display the header
         System.out.println("Welcome to the Account Creation System");
-        System.out.println("--------------------------------------");
 
         // Get user input for account creation
         System.out.print("Enter your username: ");
