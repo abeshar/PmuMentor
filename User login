@@ -1,0 +1,46 @@
+import java.io.*;
+import java.util.Scanner;
+
+public class UserLogin {
+
+    public static void login() {
+        Scanner scanner = new Scanner(System.in);
+        String usersDb = "users.txt";
+
+        // Get the username
+        System.out.print("Enter your username: ");
+        String username = scanner.nextLine().trim();
+
+        // Get the password
+        System.out.print("Enter your password: ");
+        String password = scanner.nextLine().trim();
+
+        // Check if the username and password match
+        boolean loginSuccess = false;
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(usersDb));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] user = line.split(",");
+                if (user[0].equals(username) && user[1].equals(password)) {
+                    loginSuccess = true;
+                    break;
+                }
+            }
+            reader.close();
+        } catch (IOException e) {
+            System.out.println("Error reading users database.");
+        }
+
+        // Show the result of the login attempt
+        if (loginSuccess) {
+            System.out.println("Login successful! Welcome, " + username + "!");
+        } else {
+            System.out.println("Invalid username or password. Please try again.");
+        }
+    }
+
+    public static void main(String[] args) {
+        login();
+    }
+}
